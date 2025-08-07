@@ -2,6 +2,9 @@ import App from "@/App";
 import AdminLayout from "@/components/layouts/AdminLayout";
 import About from "@/pages/About";
 import Analytics from "@/pages/Analytics";
+import LoginPage from "@/pages/auth/Login";
+import SignUpPage from "@/pages/auth/SignUp";
+import Tours from "@/pages/Tours";
 import { createBrowserRouter } from "react-router-dom";
 
 export const router = createBrowserRouter([
@@ -12,6 +15,10 @@ export const router = createBrowserRouter([
             {
                 path: 'about',
                 Component: About
+            },
+            {
+                path: 'tours',
+                Component: Tours
             }
         ]
     },
@@ -24,5 +31,14 @@ export const router = createBrowserRouter([
                 Component: Analytics
             }
         ]
+    },
+    {
+        path: '/login',
+        Component: LoginPage
+    },
+    {
+        path: '/signup',
+        Component: SignUpPage
     }
+    
 ])

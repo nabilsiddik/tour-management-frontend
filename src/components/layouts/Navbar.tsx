@@ -1,12 +1,10 @@
 import { BookOpenIcon, InfoIcon, LifeBuoyIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
@@ -16,10 +14,28 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import Logo from "@/assets/icons/Logo"
+import { ModeToggle } from "./ModeToggler"
+import { Link, NavLink } from "react-router-dom"
+import { Button } from "../ui/button"
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
-  { href: "#", label: "Home" },
+  {
+    href: "/",
+    label: "Home"
+  },
+  {
+    label: "About",
+    submenu: false,
+    type: "icon",
+    href: 'about'
+  },
+  {
+    label: "Tours",
+    submenu: false,
+    type: "icon",
+    href: 'tours'
+  },
   {
     label: "Features",
     submenu: true,
@@ -43,31 +59,19 @@ const navigationLinks = [
     ],
   },
   {
-    label: "Pricing",
+    label: "Auth",
     submenu: true,
     type: "simple",
     items: [
-      { href: "#", label: "Product A" },
-      { href: "#", label: "Product B" },
-      { href: "#", label: "Product C" },
-      { href: "#", label: "Product D" },
-    ],
-  },
-  {
-    label: "About",
-    submenu: true,
-    type: "icon",
-    items: [
-      { href: "#", label: "Getting Started", icon: "BookOpenIcon" },
-      { href: "#", label: "Tutorials", icon: "LifeBuoyIcon" },
-      { href: "#", label: "About Us", icon: "InfoIcon" },
+      { href: "/login", label: "Login" },
+      { href: "/signup", label: "Signup" }
     ],
   },
 ]
 
 export default function Navbar() {
   return (
-    <header className="border-b px-4 md:px-6">
+    <header className="border-b container mx-auto px-4 md:px-6">
       <div className="flex h-16 items-center justify-between gap-4">
         {/* Left side */}
         <div className="flex items-center gap-2">
@@ -117,28 +121,21 @@ export default function Navbar() {
                             {link.label}
                           </div>
                           <ul>
-                            {link.items.map((item, itemIndex) => (
+                            {link.items && link.items.map((item, itemIndex) => (
                               <li key={itemIndex}>
-                                <NavigationMenuLink
-                                  href={item.href}
-                                  className="py-1.5"
-                                >
+                                <NavLink to={item.href}>
                                   {item.label}
-                                </NavigationMenuLink>
+                                </NavLink>
                               </li>
                             ))}
                           </ul>
                         </>
                       ) : (
-                        <NavigationMenuLink href={link.href} className="py-1.5">
+                        <NavLink to={link.href || '#'}>
                           {link.label}
-                        </NavigationMenuLink>
+                        </NavLink>
                       )}
-                      {/* Add separator between different types of items */}
                       {index < navigationLinks.length - 1 &&
-                        // Show separator if:
-                        // 1. One is submenu and one is simple link OR
-                        // 2. Both are submenus but with different types
                         ((!link.submenu &&
                           navigationLinks[index + 1].submenu) ||
                           (link.submenu &&
@@ -158,10 +155,12 @@ export default function Navbar() {
               </NavigationMenu>
             </PopoverContent>
           </Popover>
+
+
           {/* Main nav */}
           <div className="flex items-center gap-6">
             <a href="#" className="text-primary hover:text-primary/90">
-              <Logo/>
+              <Logo />
             </a>
             {/* Navigation menu */}
             <NavigationMenu viewport={false} className="max-md:hidden">
@@ -181,12 +180,9 @@ export default function Navbar() {
                                 : "min-w-48"
                             )}
                           >
-                            {link.items.map((item, itemIndex) => (
-                              <li key={itemIndex}>
-                                <NavigationMenuLink
-                                  href={item.href}
-                                  className="py-1.5"
-                                >
+                            {link.items && link.items.map((item, itemIndex) => (
+                              <li key={itemIndex} className="py-1.5 px-1.5">
+                                <NavLink to={item.href || '#'} className='text-muted-foreground hover:text-primary'>
                                   {/* Display icon if present */}
                                   {link.type === "icon" && "icon" in item && (
                                     <div className="flex items-center gap-2">
@@ -217,7 +213,7 @@ export default function Navbar() {
 
                                   {/* Display label with description if present */}
                                   {link.type === "description" &&
-                                  "description" in item ? (
+                                    "description" in item ? (
                                     <div className="space-y-1">
                                       <div className="font-medium">
                                         {item.label}
@@ -234,19 +230,16 @@ export default function Navbar() {
                                         <span>{item.label}</span>
                                       ))
                                   )}
-                                </NavigationMenuLink>
+                                </NavLink>
                               </li>
                             ))}
                           </ul>
                         </NavigationMenuContent>
                       </>
                     ) : (
-                      <NavigationMenuLink
-                        href={link.href}
-                        className="text-muted-foreground hover:text-primary py-1.5 font-medium"
-                      >
+                      <NavLink className='text-muted-foreground hover:text-primary bg-transparent px-2 py-1.5 font-medium' to={link.href || '#'}>
                         {link.label}
-                      </NavigationMenuLink>
+                      </NavLink>
                     )}
                   </NavigationMenuItem>
                 ))}
@@ -256,12 +249,12 @@ export default function Navbar() {
         </div>
         {/* Right side */}
         <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm" className="text-sm">
-            <a href="#">Sign In</a>
-          </Button>
-          <Button asChild size="sm" className="text-sm">
-            <a href="#">Get Started</a>
-          </Button>
+          <Link to='/' className="cursor-pointer">
+            <Button size="sm" className="text-sm cursor-pointer">
+              Book Tour
+            </Button>
+          </Link>
+          <ModeToggle />
         </div>
       </div>
     </header>
