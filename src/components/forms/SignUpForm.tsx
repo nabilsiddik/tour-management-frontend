@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import PasswordField from "../PasswordField"
 import { useRegisterMutation } from "@/redux/features/auth/auth.api"
 import { toast } from "sonner"
+import { useNavigate } from "react-router-dom"
 
 // zod schema for user registration 
 const registerSchema = z.object({
@@ -45,6 +46,7 @@ const SignUpForm = () => {
     })
 
     const [register] = useRegisterMutation()
+    const navigate = useNavigate()
 
     // On submit form
     const onSubmit = async(data: z.infer<typeof registerSchema>) => {
@@ -57,9 +59,8 @@ const SignUpForm = () => {
 
         try{
             const result = await register(userInfo).unwrap()
-            console.log(result)
             toast.success('User Created Successfully.')
-            
+            navigate('/verify')
         }catch(error: any){
             console.error(error)
         }
