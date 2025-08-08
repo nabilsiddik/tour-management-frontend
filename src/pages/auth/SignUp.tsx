@@ -1,6 +1,7 @@
 'use client'
 import Logo from '@/assets/icons/Logo';
 import LogoIcon from '@/assets/icons/LogoIcon';
+import SignUpForm from '@/components/forms/SignUpForm';
 import { UserIcon } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -134,7 +135,7 @@ const SignUpPage: React.FC = () => {
           <form className="space-y-6 max-h-100vh overflow-hidden">
             <div className='overflow-y-auto'>
               {/* Name Input */}
-              <div className='mb-3'>
+              {/* <div className='mb-3'>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Full Name
                 </label>
@@ -151,10 +152,10 @@ const SignUpPage: React.FC = () => {
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all duration-200"
                   />
                 </div>
-              </div>
+              </div> */}
 
               {/* Email Input */}
-              <div className='mb-3'>
+              {/* <div className='mb-3'>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Email address
                 </label>
@@ -171,10 +172,10 @@ const SignUpPage: React.FC = () => {
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all duration-200"
                   />
                 </div>
-              </div>
+              </div> */}
 
               {/* Phone Input */}
-              <div className='mb-3'>
+              {/* <div className='mb-3'>
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Phone Number
                 </label>
@@ -191,10 +192,10 @@ const SignUpPage: React.FC = () => {
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-black text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all duration-200"
                   />
                 </div>
-              </div>
+              </div> */}
 
               {/* Password Input */}
-              <div className='mb-3'>
+              {/* <div className='mb-3'>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Password
                 </label>
@@ -218,10 +219,10 @@ const SignUpPage: React.FC = () => {
                     {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               {/* Confirm Password Input */}
-              <div className='mb-3'>
+              {/* <div className='mb-3'>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Confirm Password
                 </label>
@@ -245,10 +246,10 @@ const SignUpPage: React.FC = () => {
                     {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               {/* Remember & Forgot */}
-              <div className="flex items-center justify-between mb-5">
+              {/* <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center">
                   <input
                     id="remember-me"
@@ -262,18 +263,20 @@ const SignUpPage: React.FC = () => {
                 <a href="#" className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors">
                   Reset password
                 </a>
-              </div>
+              </div> */}
 
               {/* Submit Button */}
-              <button
+              {/* <button
                 type="submit"
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 text-white font-semibold py-3 px-4 rounded-lg hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transform transition-all duration-200 shadow-lg cursor-pointer"
               >
                 Sign in to your account
-              </button>
+              </button> */}
             </div>
-
           </form>
+
+          {/* actual form  */}
+          <SignUpForm/>
 
           {/* Footer */}
           <div className="text-center pb-3">
