@@ -2,6 +2,7 @@
 import Logo from '@/assets/icons/Logo';
 import LogoIcon from '@/assets/icons/LogoIcon';
 import LoginForm from '@/components/forms/LoginForm';
+import config from '@/config/config';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -107,7 +108,9 @@ const LoginPage: React.FC = () => {
 
           {/* Social Login */}
           <div className="space-y-3">
-            <button className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors font-medium">
+            <button onClick={() => {
+              window.open(`${config.baseUrl}/auth/google`)
+            }} className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors font-medium">
               <GoogleIcon />
               <span className="ml-3">Continue with Google</span>
             </button>

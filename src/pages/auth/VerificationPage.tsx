@@ -24,19 +24,20 @@ import {
 import z from 'zod'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useSendOtpMutation, useVerifyOtpMutation } from "@/redux/features/auth/auth.api"
 import { toast } from "sonner"
 
 const otpFormSchema = z.object({
   pin: z.string().min(6, {
     message: "Your one-time password must be 6 characters.",
-  }),
+  })
 })
 
 
 const VerificationPage = () => {
   const [confirmed, setConfirmed] = useState(false)
+  const [timer, setTimer] = useState(120)
   const location = useLocation()
   console.log(location.state)
   const [email] = useState(location.state)
@@ -50,6 +51,16 @@ const VerificationPage = () => {
   //   }
   // }, [])
 
+  useEffect(() => {
+    if(email && confirmed){
+      const timerId = setInterval(() => {
+        setTimer(prev => (prev > 0 ? prev - 1 : 0))
+      }, 1000)
+
+      return () => clearInterval(timerId)
+    } 
+  }, [email, confirmed])
+  
   const form = useForm<z.infer<typeof otpFormSchema>>({
     resolver: zodResolver(otpFormSchema),
     defaultValues: {
@@ -60,9 +71,7 @@ const VerificationPage = () => {
 
   // Handle OTP submission
   const otpSubmission = async (data: z.infer<typeof otpFormSchema>) => {
-
     try {
-
       const res = await verifyOtp({
         otp: data.pin,
         email
@@ -70,7 +79,7 @@ const VerificationPage = () => {
 
       if (res.success) {
         toast.success('Verification successfull.')
-        navigate('/')
+        navigate('/login')
       }
 
     } catch (error: any) {
@@ -83,8 +92,9 @@ const VerificationPage = () => {
   }
 
   // Handle confirm verification
-  const handleConfirmVerification = async () => {
+  const handleSendOtp = async () => {
     const toastId = toast.loading('Loading...')
+    setTimer(120)
 
     try {
       const res = await sendOtp({ email }).unwrap()
@@ -120,7 +130,7 @@ const VerificationPage = () => {
                         <FormDescription className="text-center text-sm">
                           Please enter the one-time password sent to your email.
                         </FormDescription>
-                        <div className="flex justify-center">
+                        <div className="flex flex-col justify-center items-center">
                           <FormControl>
                             <InputOTP maxLength={6} {...field}>
                               <InputOTPGroup>
@@ -133,6 +143,10 @@ const VerificationPage = () => {
                               </InputOTPGroup>
                             </InputOTP>
                           </FormControl>
+                          <FormDescription>
+                            <Button disabled={timer !== 0} onClick={handleSendOtp} type='button' variant='link' className="cursor-pointer">Resend OTP</Button>
+                            <span className="font-bold">{timer} s</span>
+                          </FormDescription>
                         </div>
                         <FormMessage />
                       </FormItem>
@@ -157,7 +171,7 @@ const VerificationPage = () => {
             </div>
           </CardContent>
           <CardFooter>
-            <Button onClick={handleConfirmVerification} className="mx-auto block w-full cursor-pointer" type="submit">Confirm</Button>
+            <Button onClick={handleSendOtp} className="mx-auto block w-full cursor-pointer" type="submit">Confirm</Button>
           </CardFooter>
         </Card>
 

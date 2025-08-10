@@ -17,6 +17,8 @@ import Logo from "@/assets/icons/Logo"
 import { ModeToggle } from "./ModeToggler"
 import { Link, NavLink } from "react-router-dom"
 import { Button } from "../ui/button"
+import { authApi, useLogoutMutation, useUserInfoQuery } from "@/redux/features/auth/auth.api"
+import { useAppDispatch } from "@/redux/hook"
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
@@ -70,6 +72,19 @@ const navigationLinks = [
 ]
 
 export default function Navbar() {
+
+  const { data } = useUserInfoQuery(undefined)
+  const [logout] = useLogoutMutation(undefined)
+  const dispatch = useAppDispatch()
+
+  console.log(data && data.data)
+
+  // Log out user
+  const handleLogout = async () => {
+    await logout(undefined)
+    dispatch(authApi.util.resetApiState())
+  }
+
   return (
     <header className="border-b container mx-auto px-4 md:px-6">
       <div className="flex h-16 items-center justify-between gap-4">
@@ -249,11 +264,17 @@ export default function Navbar() {
         </div>
         {/* Right side */}
         <div className="flex items-center gap-2">
-          <Link to='/' className="cursor-pointer">
-            <Button size="sm" className="text-sm cursor-pointer">
-              Book Tour
+          {data?.data?.email ?
+            <Button onClick={handleLogout} size="sm" className="text-sm text-foreground cursor-pointer">
+              Logout
             </Button>
-          </Link>
+            :
+            <Link to='/login'>
+              <Button size="sm" className="text-sm text-foreground cursor-pointer">
+                Login
+              </Button>
+            </Link>
+          }
           <ModeToggle />
         </div>
       </div>

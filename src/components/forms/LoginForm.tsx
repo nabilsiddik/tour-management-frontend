@@ -37,17 +37,21 @@ const LoginForm = () => {
                 password: data.password
             }
             const result = await login(userInfo).unwrap()
-            // toast.success('User Successfully loged in.')
-            // navigate('/', {
-            //     state: data.email
-            // })
+
+            if (result.success) {
+                toast.success('User Successfully loged in.')
+                navigate('/')
+            }
 
         } catch (error: any) {
             console.error(error)
 
+            if(error?.data?.message === 'password is not valid'){
+                toast.error('Invalid credentials')
+            }
+
             // Navigate to verify page is user is unauthorized
-            if(error.status === 401){
-                console.log(error)
+            if (error?.data?.message === 'User is not verified') {
                 toast.error(error?.data?.message)
                 navigate('/verify', {
                     state: data.email
