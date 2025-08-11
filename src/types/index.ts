@@ -1,9 +1,12 @@
-export type {ISendOtp} from './auth.type'
-export type {ILogin} from './auth.type'
-export type {IRegistration} from './auth.type'
+import type { LucideProps } from 'lucide-react'
+import type { ComponentType, ForwardRefExoticComponent, RefAttributes } from 'react'
+
+export type { ISendOtp } from './auth.type'
+export type { ILogin } from './auth.type'
+export type { IRegistration } from './auth.type'
 
 // OTP Response types
-export interface IOtpResponse<T>{
+export interface IOtpResponse<T> {
   statusCode: number
   success: boolean
   message: string
@@ -72,3 +75,18 @@ export interface Auth {
   provider: string
   providerId: string
 }
+
+
+// Type for sidebar item
+export interface ISidebarItem {
+  title: string,
+  url: string,
+  icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>,
+  isActive: boolean,
+  items: {
+    title: string,
+    url: string,
+    component: ComponentType,
+  }[]
+}
+
