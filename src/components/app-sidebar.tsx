@@ -17,10 +17,17 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { adminSidebarRoutes } from "@/routes/AdminSidebarRoutes"
+import { adminSidebarRoutes } from "@/routes/adminSidebarRoutes"
+import { userSidebarRoutes } from "@/routes/userSidebarRoutes"
+import { useUserInfoQuery } from "@/redux/features/auth/auth.api"
+import { role } from "@/constants/role"
+import { getSidebarItem } from "@/utils/getSidebarItems"
 
-// This is sample data.
-const data = {
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+  const { data } = useUserInfoQuery(undefined)
+  const sidebarData = {
   user: {
     name: "shadcn",
     email: "m@example.com",
@@ -43,20 +50,21 @@ const data = {
       plan: "Free",
     },
   ],
-  navMain: adminSidebarRoutes
+  navMain: getSidebarItem(data?.data?.role)
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher teams={sidebarData.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={sidebarData.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={sidebarData.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

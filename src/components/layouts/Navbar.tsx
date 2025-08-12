@@ -19,47 +19,58 @@ import { Link, NavLink } from "react-router-dom"
 import { Button } from "../ui/button"
 import { authApi, useLogoutMutation, useUserInfoQuery } from "@/redux/features/auth/auth.api"
 import { useAppDispatch } from "@/redux/hook"
+import { role } from "@/constants/role"
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
   {
     href: "/",
-    label: "Home"
+    label: "Home",
+    role: 'PUBLIC'
   },
   {
     label: "About",
     submenu: false,
     type: "icon",
-    href: 'about'
+    href: '/about',
+    role: 'PUBLIC'
   },
   {
-    label: "Tours",
+    label: "Admin",
     submenu: false,
     type: "icon",
-    href: 'tours'
+    href: '/admin',
+    role: role.admin
   },
   {
-    label: "Features",
-    submenu: true,
-    type: "description",
-    items: [
-      {
-        href: "#",
-        label: "Components",
-        description: "Browse all components in the library.",
-      },
-      {
-        href: "#",
-        label: "Documentation",
-        description: "Learn how to use the library.",
-      },
-      {
-        href: "#",
-        label: "Templates",
-        description: "Pre-built layouts for common use cases.",
-      },
-    ],
+    label: "User",
+    submenu: false,
+    type: "icon",
+    href: '/user',
+    role: role.admin
   },
+  // {
+  //   label: "Features",
+  //   submenu: true,
+  //   type: "description",
+  //   items: [
+  //     {
+  //       href: "#",
+  //       label: "Components",
+  //       description: "Browse all components in the library.",
+  //     },
+  //     {
+  //       href: "#",
+  //       label: "Documentation",
+  //       description: "Learn how to use the library.",
+  //     },
+  //     {
+  //       href: "#",
+  //       label: "Templates",
+  //       description: "Pre-built layouts for common use cases.",
+  //     },
+  //   ],
+  // },
   {
     label: "Auth",
     submenu: true,
@@ -72,12 +83,10 @@ const navigationLinks = [
 ]
 
 export default function Navbar() {
-
   const { data } = useUserInfoQuery(undefined)
   const [logout] = useLogoutMutation(undefined)
   const dispatch = useAppDispatch()
 
-  console.log(data && data.data)
 
   // Log out user
   const handleLogout = async () => {
@@ -181,82 +190,40 @@ export default function Navbar() {
             <NavigationMenu viewport={false} className="max-md:hidden">
               <NavigationMenuList className="gap-2">
                 {navigationLinks.map((link, index) => (
-                  <NavigationMenuItem key={index}>
-                    {link.submenu ? (
-                      <>
-                        <NavigationMenuTrigger className="text-muted-foreground hover:text-primary bg-transparent px-2 py-1.5 font-medium *:[svg]:-me-0.5 *:[svg]:size-3.5">
-                          {link.label}
-                        </NavigationMenuTrigger>
-                        <NavigationMenuContent className="data-[motion=from-end]:slide-in-from-right-16! data-[motion=from-start]:slide-in-from-left-16! data-[motion=to-end]:slide-out-to-right-16! data-[motion=to-start]:slide-out-to-left-16! z-50 p-1">
-                          <ul
-                            className={cn(
-                              link.type === "description"
-                                ? "min-w-64"
-                                : "min-w-48"
-                            )}
-                          >
-                            {link.items && link.items.map((item, itemIndex) => (
-                              <li key={itemIndex} className="py-1.5 px-1.5">
-                                <NavLink to={item.href || '#'} className='text-muted-foreground hover:text-primary'>
-                                  {/* Display icon if present */}
-                                  {link.type === "icon" && "icon" in item && (
-                                    <div className="flex items-center gap-2">
-                                      {item.icon === "BookOpenIcon" && (
-                                        <BookOpenIcon
-                                          size={16}
-                                          className="text-foreground opacity-60"
-                                          aria-hidden="true"
-                                        />
-                                      )}
-                                      {item.icon === "LifeBuoyIcon" && (
-                                        <LifeBuoyIcon
-                                          size={16}
-                                          className="text-foreground opacity-60"
-                                          aria-hidden="true"
-                                        />
-                                      )}
-                                      {item.icon === "InfoIcon" && (
-                                        <InfoIcon
-                                          size={16}
-                                          className="text-foreground opacity-60"
-                                          aria-hidden="true"
-                                        />
-                                      )}
-                                      <span>{item.label}</span>
-                                    </div>
-                                  )}
+                  <>
+                    {/* public routes  */}
+                    {link.role === 'PUBLIC' &&
+                      <NavigationMenuItem key={index}>
+                        {link.submenu ? (
+                          <>
+                            <NavigationMenuTrigger className="text-muted-foreground hover:text-primary bg-transparent px-2 py-1.5 font-medium *:[svg]:-me-0.5 *:[svg]:size-3.5">
+                              {link.label}
+                            </NavigationMenuTrigger>
+                          </>
+                        ) : (
+                          <NavLink className='text-muted-foreground hover:text-primary bg-transparent px-2 py-1.5 font-medium' to={link.href || '#'}>
+                            {link.label}
+                          </NavLink>
+                        )}
+                      </NavigationMenuItem>
+                    }
 
-                                  {/* Display label with description if present */}
-                                  {link.type === "description" &&
-                                    "description" in item ? (
-                                    <div className="space-y-1">
-                                      <div className="font-medium">
-                                        {item.label}
-                                      </div>
-                                      <p className="text-muted-foreground line-clamp-2 text-xs">
-                                        {item.description}
-                                      </p>
-                                    </div>
-                                  ) : (
-                                    // Display simple label if not icon or description type
-                                    !link.type ||
-                                    (link.type !== "icon" &&
-                                      link.type !== "description" && (
-                                        <span>{item.label}</span>
-                                      ))
-                                  )}
-                                </NavLink>
-                              </li>
-                            ))}
-                          </ul>
-                        </NavigationMenuContent>
-                      </>
-                    ) : (
-                      <NavLink className='text-muted-foreground hover:text-primary bg-transparent px-2 py-1.5 font-medium' to={link.href || '#'}>
-                        {link.label}
-                      </NavLink>
-                    )}
-                  </NavigationMenuItem>
+                    {link.role === data?.data?.role &&
+                      <NavigationMenuItem key={index}>
+                        {link.submenu ? (
+                          <>
+                            <NavigationMenuTrigger className="text-muted-foreground hover:text-primary bg-transparent px-2 py-1.5 font-medium *:[svg]:-me-0.5 *:[svg]:size-3.5">
+                              {link.label}
+                            </NavigationMenuTrigger>
+                          </>
+                        ) : (
+                          <NavLink className='text-muted-foreground hover:text-primary bg-transparent px-2 py-1.5 font-medium' to={link.href || '#'}>
+                            {link.label}
+                          </NavLink>
+                        )}
+                      </NavigationMenuItem>
+                    }
+                  </>
                 ))}
               </NavigationMenuList>
             </NavigationMenu>

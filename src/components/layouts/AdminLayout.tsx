@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom"
 
 const AdminLayout = () => {
   return (
-    <div>
+    <div className="p-20">
       <h1>Admin Layout</h1>
       <Outlet/>
     </div>

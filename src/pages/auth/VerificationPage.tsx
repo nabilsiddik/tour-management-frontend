@@ -39,7 +39,6 @@ const VerificationPage = () => {
   const [confirmed, setConfirmed] = useState(false)
   const [timer, setTimer] = useState(120)
   const location = useLocation()
-  console.log(location.state)
   const [email] = useState(location.state)
   const [sendOtp] = useSendOtpMutation()
   const [verifyOtp] = useVerifyOtpMutation()

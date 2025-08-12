@@ -1,7 +1,9 @@
 import AddTour from "@/pages/admin/AddTour";
 import AddTourType from "@/pages/admin/AddTourType";
-import Analytics from "@/pages/admin/Analytics";
+import AllTourTypes from "@/pages/admin/AllTourTypes";
 import { SquareTerminal } from "lucide-react";
+import { lazy } from "react";
+const Analytics = lazy(() => import('@/pages/admin/Analytics'))
 
 export const adminSidebarRoutes = [
     {
@@ -32,6 +34,11 @@ export const adminSidebarRoutes = [
             title: "Add Tour",
             url: '/admin/add-tour',
             component: AddTour
+        },
+        {
+          title: 'All Tour Types',
+          url: '/admin/tour-types',
+          component: AllTourTypes
         }
       ],
     }

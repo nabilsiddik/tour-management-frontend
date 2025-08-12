@@ -1,15 +1,18 @@
 import App from "@/App";
-import AdminLayout from "@/components/layouts/AdminLayout";
 import DashboardLayout from "@/components/layouts/Dashboard/DashboardLayout";
 import About from "@/pages/About";
-import Analytics from "@/pages/admin/Analytics";
 import LoginPage from "@/pages/auth/LoginPage";
 import SignUpPage from "@/pages/auth/SignUpPage";
 import VerificationPage from "@/pages/auth/VerificationPage";
-import Tours from "@/pages/user/Tours";
 import { generateRoutes } from "@/utils/generateRoutes";
-import { createBrowserRouter } from "react-router-dom";
-import { adminSidebarRoutes } from "./AdminSidebarRoutes";
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import { adminSidebarRoutes } from "./adminSidebarRoutes";
+import { userSidebarRoutes } from "./userSidebarRoutes";
+import { withAuth } from "@/utils/withAuth";
+import Unauthorized from "@/pages/Unauthorized";
+import { role } from "@/constants/role";
+import type { TRole } from "@/types";
+import AllTourTypes from "@/pages/admin/AllTourTypes";
 
 export const router = createBrowserRouter([
     {
@@ -18,28 +21,35 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: 'about',
-                Component: About
-            },
-            {
-                path: 'tours',
-                Component: Tours
+                Component: withAuth(About)
             }
         ]
     },
     {
         path: '/admin',
-        Component: DashboardLayout,
-        children: [...generateRoutes(adminSidebarRoutes)]
+        Component: withAuth(DashboardLayout, role.admin as TRole),
+        children: [
+            {
+                index: true,
+                element: <Navigate to={'/admin/analytics'} />
+            },
+            ...generateRoutes(adminSidebarRoutes)
+        ]
     },
     {
         path: '/user',
-        Component: DashboardLayout,
+        Component: withAuth(DashboardLayout, role.user as TRole),
         children: [
             {
-                path: 'tours',
-                Component: Analytics
-            }
+                index: true,
+                element: <Navigate to={'/user/bookings'} />
+            },
+            ...generateRoutes(userSidebarRoutes)
         ]
+    },
+    {
+        path: '/tour',
+        Component: withAuth(AllTourTypes, role.admin as TRole)
     },
     {
         path: '/login',
@@ -52,6 +62,10 @@ export const router = createBrowserRouter([
     {
         path: '/verify',
         Component: VerificationPage
+    },
+    {
+        path: '/unauthorized',
+        Component: Unauthorized
     }
-    
+
 ])
