@@ -12,7 +12,7 @@ import { withAuth } from "@/utils/withAuth";
 import Unauthorized from "@/pages/Unauthorized";
 import { role } from "@/constants/role";
 import type { TRole } from "@/types";
-import AllTourTypes from "@/pages/admin/AllTourTypes";
+import AllTourTypes from "@/pages/admin/AddTourType";
 
 export const router = createBrowserRouter([
     {

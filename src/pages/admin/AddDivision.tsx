@@ -1,4 +1,5 @@
 import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal"
+import { AddDivisionModal } from "@/components/modules/Division/AddDivisionModal"
 import { AddTourTypeModal } from "@/components/modules/TourType/AddTourTypeModal"
 import {
     Table,
@@ -8,7 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { useDeleteTourTypeMutation, useGetTourTypesQuery } from "@/redux/features/tour/tour.api"
+import { useAllDivisionsQuery, useDeleteDivisionMutation } from "@/redux/features/division/division.api"
 import { formatDate } from "@/utils/formatDate"
 import { Edit, Trash2 } from "lucide-react"
 import { toast } from "sonner"
@@ -21,19 +22,19 @@ interface ITourType {
 
 }
 
-const AddTourType = () => {
+const AddDivision = () => {
 
-    const { data } = useGetTourTypesQuery(undefined)
-    const [deleteTourType] = useDeleteTourTypeMutation()
+    const { data } = useAllDivisionsQuery(undefined)
+    const [deleteDivision] = useDeleteDivisionMutation()
 
-    // Delete tour type
-    const handleDeleteTourType = async (tourTypeId: string) => {
+    // Delete division
+    const handleDeleteDivision = async (divisionId: string) => {
         const toastId = toast.loading('Deleting...')
 
         try {
-            const res = await deleteTourType(tourTypeId).unwrap()
+            const res = await deleteDivision(divisionId).unwrap()
             if (res.success) {
-                toast.success('Tour type deleted.', {id: toastId})
+                toast.success('Division deleted.', { id: toastId })
             }
         } catch (error: any) {
             console.error(error)
@@ -46,29 +47,36 @@ const AddTourType = () => {
     return (
         <div>
             <div className="flex items-center justify-between">
-                <h2 className="font-bold text-center text-2xl mb-10 mt-5">All Tour Types</h2>
-                <AddTourTypeModal />
+                <h2 className="font-bold text-center text-2xl mb-10 mt-5">All Divisions</h2>
+                <AddDivisionModal />
             </div>
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Name</TableHead>
+                        <TableHead>Division</TableHead>
                         <TableHead>Created At</TableHead>
                         <TableHead>Updated At</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data && data.map((tourType: ITourType) => {
-                        return <TableRow key={tourType._id}>
-                            <TableCell className="font-medium">{tourType?.name}</TableCell>
-                            <TableCell>{formatDate(new Date(tourType.createdAt))}</TableCell>
-                            <TableCell>{formatDate(new Date(tourType.updatedAt))}</TableCell>
+                    {data && data.data.map((division: any) => {
+                        return <TableRow key={division._id}>
+                            <TableCell className="font-medium">
+                                <div className="flex flex-col gap-3 items-center">
+                                    <span>
+                                        <img className="w-[100px]" src={division?.thumbnail} alt="" />
+                                    </span>
+                                    <span className="font-bold text-center">{division?.name}</span>
+                                </div>
+                            </TableCell>
+                            <TableCell>{formatDate(new Date(division.createdAt))}</TableCell>
+                            <TableCell>{formatDate(new Date(division.updatedAt))}</TableCell>
                             <TableCell>
                                 <div className="flex items-center gap-4">
                                     <DeleteConfirmationModal
-                                    element='Tour Type'
-                                    onConfirm = {() => handleDeleteTourType(tourType._id)}>
+                                    element='Division'
+                                    onConfirm={() => handleDeleteDivision(division._id)}>
                                         <Trash2 className="cursor-pointer" />
                                     </DeleteConfirmationModal>
                                     <Edit className="cursor-pointer" />
@@ -82,4 +90,4 @@ const AddTourType = () => {
     )
 }
 
-export default AddTourType
+export default AddDivision

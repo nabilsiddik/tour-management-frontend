@@ -13,8 +13,6 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { adminSidebarRoutes } from "@/routes/adminSidebarRoutes"
-import { generateRoutes } from "@/utils/generateRoutes"
 import { Outlet } from "react-router-dom"
 
 export default function DashboardLayout() {
