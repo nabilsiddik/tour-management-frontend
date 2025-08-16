@@ -71,7 +71,7 @@ export const AddTourForm = () => {
         title: z.string(),
         description: z.string().optional(),
         location: z.string().optional(),
-        costFrom: z.number().optional(),
+        costFrom: z.number(),
         startDate: z.string(),
         endDate: z.string(),
         included: z.array(
@@ -98,8 +98,8 @@ export const AddTourForm = () => {
         minAge: z.number().optional(),
         division: z.string(),
         tourType: z.string(),
-        departureLocation: z.string().optional(),
-        arivalLocation: z.string().optional()
+        departureLocation: z.string(),
+        arrivalLocation: z.string()
     })
 
     const form = useForm<z.infer<typeof tourSchema>>({
@@ -112,14 +112,13 @@ export const AddTourForm = () => {
             endDate: '',
             included: [{ value: "" }],
             excluded: [{ value: "" }],
-            amenities: [
-                { value: "" }
-            ],
-            tourPlan: [
-                { value: "" }
-            ],
+            amenities: [{ value: "" }],
+            tourPlan: [{ value: "" }],
             maxGuest: 50,
             minAge: 8,
+            departureLocation: '',
+            arrivalLocation: '',
+            costFrom: 0
         }
     })
 
@@ -174,7 +173,10 @@ export const AddTourForm = () => {
                 included: data.included && data.included.map((item: { value: string }) => item.value),
                 excluded: data.excluded && data.excluded.map((item: { value: string }) => item.value),
                 amenities: data.amenities && data.amenities.map((item: { value: string }) => item.value),
-                tourPlan: data.tourPlan && data.tourPlan.map(((item: {value: string}, index: number) => `Day ${index+1}: ${item.value}`))
+                tourPlan: data.tourPlan && data.tourPlan.map(((item: { value: string }, index: number) => `Day ${index + 1}: ${item.value}`)),
+                costFrom: Number(data.costFrom),
+                maxGuest: Number(data.maxGuest),
+                minAge: Number(data.minAge)
             }
             console.log(tourData)
             const formData = new FormData()
@@ -397,6 +399,57 @@ export const AddTourForm = () => {
                     </div>
 
 
+                    {/* departureLocation and arrivalLocation  */}
+                    <div className='flex items-center gap-3'>
+                        {/* departureLocation */}
+                        <FormField
+                            control={form.control}
+                            name="departureLocation"
+                            render={({ field }) => (
+                                <FormItem className='flex-1'>
+                                    <FormLabel>From</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} type='text' placeholder='Departure Location' />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* departureLocation */}
+                        <FormField
+                            control={form.control}
+                            name="arrivalLocation"
+                            render={({ field }) => (
+                                <FormItem className='flex-1'>
+                                    <FormLabel>To</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} type='text' placeholder='Arrival Location' />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    {/* cost from  */}
+                    <div>
+                        <FormField
+                            control={form.control}
+                            name="costFrom"
+                            render={({ field }) => (
+                                <FormItem className='flex-1'>
+                                    <FormLabel>Cost From</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} type='number' placeholder='Cost Starting from' />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+
                     {/* tour description and multiple tour image uploader */}
                     <div className='flex gap-3 items-stretch flex-col lg:flex-row'>
                         {/* tour description  */}
@@ -545,7 +598,7 @@ export const AddTourForm = () => {
                                         render={({ field }) => (
                                             <FormItem className="flex-1">
                                                 <FormControl>
-                                                    <Input placeholder={`Day ${index+1}`} {...field} />
+                                                    <Input placeholder={`Day ${index + 1}`} {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
