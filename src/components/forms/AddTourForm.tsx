@@ -1,6 +1,6 @@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import z from 'zod'
-import { useForm } from 'react-hook-form'
+import { useFieldArray, useForm } from 'react-hook-form'
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
@@ -11,16 +11,17 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select"
-import { useGetTourTypesQuery } from '@/redux/features/tour/tour.api';
+import { useAddTourMutation, useGetTourTypesQuery } from '@/redux/features/tour/tour.api';
 import { useAllDivisionsQuery } from '@/redux/features/division/division.api';
 import { cn } from '@/lib/utils';
 import { format, formatISO } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Plus, Trash2 } from 'lucide-react';
 import { Calendar } from '../ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import MultipleTourImageUploader from '../MultipleTourImageUploader';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FileMetadata } from '@/hooks/use-file-upload';
+import { toast } from 'sonner';
 
 interface ITour {
     _id: string,
@@ -32,14 +33,22 @@ interface IDivision {
 }
 
 export const AddTourForm = () => {
+    const [addTour] = useAddTourMutation()
 
     // Multiple images states
-    const [images, setImages] = useState < (File | FileMetadata)[] | [] > ([])
-
-    console.log(images)
+    const [images, setImages] = useState<(File | FileMetadata)[] | []>([])
+    const [isUploaded, setIsUploaded] = useState<boolean>(false)
 
     const { data: tourTypes, isLoading: tourLoading } = useGetTourTypesQuery(undefined)
     const { data: divisions, isLoading: divisionLoading } = useAllDivisionsQuery(undefined)
+
+    // useEffect(() => {
+    //     if (images.length > 0) {
+    //         setIsUploaded(true)
+    //     } else {
+    //         setIsUploaded(false)
+    //     }
+    // }, [images])
 
     // all tour types
     const allTourTypes = tourTypes?.map((type: ITour) => {
@@ -65,8 +74,16 @@ export const AddTourForm = () => {
         costFrom: z.number().optional(),
         startDate: z.string(),
         endDate: z.string(),
-        included: z.array(z.string()).optional(),
-        excluded: z.array(z.string()).optional(),
+        included: z.array(
+            z.object({
+                value: z.string()
+            })
+        ).optional(),
+        excluded: z.array(
+            z.object({
+                value: z.string()
+            })
+        ).optional(),
         amenities: z.array(z.string()).optional(),
         tourPlan: z.array(z.string()).optional(),
         maxGuest: z.number().optional(),
@@ -80,24 +97,74 @@ export const AddTourForm = () => {
     const form = useForm<z.infer<typeof tourSchema>>({
         defaultValues: {
             title: '',
-            description: ''
+            description: '',
+            division: '',
+            tourType: '',
+            startDate: '',
+            endDate: '',
+            included: [{ value: "" }],
+            excluded: [{ value: "" }]
         }
     })
 
+    // Use field array hook from react hook form for included field
+    const { fields: includedFields, append: includedAppend, remove: includedRemove } = useFieldArray({
+        control: form.control,
+        name: 'included'
+    })
+
+    // Use field array hook from react hook form for excluded field
+    const { fields: excludedFields, append: excludedAppend, remove: excludedRemove } = useFieldArray({
+        control: form.control,
+        name: 'excluded'
+    })
+
+
     // Add tour
-    const handleAddTour = (data: z.infer<typeof tourSchema>) => {
-        const tourData = {
-            ...data,
-            startDate: formatISO(data.startDate),
-            endDate: formatISO(data.endDate)
+    const handleAddTour = async (data: z.infer<typeof tourSchema>) => {
+        const toastId = toast.loading('Creating...')
+        try {
+
+            if (data.startDate > data.endDate) {
+                throw new Error('End date can not be greater than start date.')
+            }
+
+            if (images.length === 0) {
+                throw new Error('Tour Images are required')
+            }
+
+            const tourData = {
+                ...data,
+                startDate: formatISO(data.startDate, { representation: "date" }),
+                endDate: formatISO(data.endDate, { representation: "date" }),
+                included: data.included && data.included.map((item: { value: string }) => item.value),
+                excluded: data.excluded && data.excluded.map((item: { value: string }) => item.value)
+            }
+            const formData = new FormData()
+            formData.append('data', JSON.stringify(tourData))
+            images.forEach((image) => formData.append('files', image as File))
+
+            const res = await addTour(formData).unwrap()
+
+            if (res.success) {
+                toast.success('Tour Created.', { id: toastId })
+            }
+
+        } catch (error: any) {
+            console.error(error)
+
+            if (error instanceof (Error)) {
+                toast.error(error?.message, { id: toastId })
+            } else if (error?.data?.message) {
+                toast.error(error?.data?.message, { id: toastId })
+            }
         }
 
-        console.log(tourData)
     }
 
     return (
-        <div className='max-w-4xl mx-auto px-10 flex-1'>
-            <h1 className='font-bold text-center my-10 text-3xl'>Add a Tour</h1>
+        <div className='max-w-4xl mx-auto px-10 flex-1 rounded-lg py-10'>
+            <h1 className='font-bold text-center text-3xl'>Add a Tour</h1>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleAddTour)} className="space-y-8">
                     {/* tour title  */}
@@ -133,8 +200,8 @@ export const AddTourForm = () => {
                                             {allTourTypes.map((item: {
                                                 value: string,
                                                 label: string
-                                            }) => {
-                                                return <SelectItem value={item?.value}>{item?.label}</SelectItem>
+                                            }, index: number) => {
+                                                return <SelectItem key={index} value={item?.value}>{item?.label}</SelectItem>
                                             })}
                                         </SelectContent>
                                     </Select>
@@ -159,8 +226,8 @@ export const AddTourForm = () => {
                                             {allDivisions?.map((item: {
                                                 value: string,
                                                 label: string
-                                            }) => {
-                                                return <SelectItem value={item?.value}>{item?.label}</SelectItem>
+                                            }, index: number) => {
+                                                return <SelectItem key={index} value={item?.value}>{item?.label}</SelectItem>
                                             })}
                                         </SelectContent>
                                     </Select>
@@ -261,7 +328,7 @@ export const AddTourForm = () => {
 
 
                     {/* tour description and multiple tour image uploader */}
-                    <div className='flex gap-3 items-start flex-col lg:flex-row'>
+                    <div className='flex gap-3 items-stretch flex-col lg:flex-row'>
                         {/* tour description  */}
                         <div className='w-full lg:w-1/2'>
                             <FormField
@@ -281,7 +348,80 @@ export const AddTourForm = () => {
 
                         {/* Multiple tour image upload  */}
                         <div className='w-full lg:w-1/2'>
+                            <FormLabel className='mb-2'>Tour Images</FormLabel>
                             <MultipleTourImageUploader onChange={setImages} />
+                        </div>
+                    </div>
+
+                    {/* devider  */}
+                    <div className='border-t border-muted w-full my-10'></div>
+
+                    {/* add included  */}
+                    <div>
+                        <div className='flex items-center justify-between'>
+                            <span className='font-bold text-xl'>Add Includes</span>
+                            <Button type="button" className='text-foreground cursor-pointer' onClick={() => includedAppend({ value: '' })}>Add Includes <Plus /> </Button>
+                        </div>
+
+                        <div className='mt-5'>
+                            {includedFields.map((item, index) =>
+                                <div className='mb-5 flex items-center gap-4' key={item.id}>
+                                    <div className='flex-1 block'>
+                                        <FormField
+                                            control={form.control}
+                                            name={`included.${index}.value`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Includes</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Add Includes" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div onClick={() => includedRemove(index)} className='block cursor-pointer mt-4 bg-red-500 p-1 rounded-sm'>
+                                        <Trash2 />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* devider  */}
+                    <div className='border-t border-muted w-full my-10'></div>
+
+                    {/* add excluded  */}
+                    <div>
+                        <div className='flex items-center justify-between'>
+                            <span className='font-bold text-xl'>Add Excludes</span>
+                            <Button type="button" className='text-foreground cursor-pointer' onClick={() => excludedAppend({ value: '' })}>Add Excludes <Plus /> </Button>
+                        </div>
+
+                        <div className='mt-5'>
+                            {excludedFields.map((item, index) =>
+                                <div className='mb-5 flex items-center gap-4' key={item.id}>
+                                    <div className='flex-1 block'>
+                                        <FormField
+                                            control={form.control}
+                                            name={`excluded.${index}.value`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Includes</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Add Excludes" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div onClick={() => excludedRemove(index)} className='block cursor-pointer mt-4 bg-red-500 p-1 rounded-sm'>
+                                        <Trash2 />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 

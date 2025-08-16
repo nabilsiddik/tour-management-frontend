@@ -165,14 +165,14 @@ export default function MultipleTourImageUploader({onChange} : {
                 Files ({files.length})
               </h3>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={openFileDialog}>
+                <Button type='button' variant="outline" size="sm" onClick={openFileDialog}>
                   <UploadIcon
                     className="-ms-0.5 size-3.5 opacity-60"
                     aria-hidden="true"
                   />
                   Add files
                 </Button>
-                <Button variant="outline" size="sm" onClick={clearFiles}>
+                <Button type='button'  variant="outline" size="sm" onClick={clearFiles}>
                   <Trash2Icon
                     className="-ms-0.5 size-3.5 opacity-60"
                     aria-hidden="true"
@@ -189,7 +189,7 @@ export default function MultipleTourImageUploader({onChange} : {
                   className="bg-background relative flex flex-col rounded-md border"
                 >
                   {getFilePreview(file)}
-                  <Button
+                  <Button type='button' 
                     onClick={() => removeFile(file.id)}
                     size="icon"
                     className="border-background focus-visible:border-background absolute -top-2 -right-2 size-6 rounded-full border-2 shadow-none"
@@ -221,7 +221,7 @@ export default function MultipleTourImageUploader({onChange} : {
             <p className="text-muted-foreground text-xs">
               Max {maxFiles} files ∙ Up to {maxSizeMB}MB
             </p>
-            <Button variant="outline" className="mt-4" onClick={openFileDialog}>
+            <Button type='button'  variant="outline" className="mt-4" onClick={openFileDialog}>
               <UploadIcon className="-ms-1 opacity-60" aria-hidden="true" />
               Select images
             </Button>

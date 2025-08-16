@@ -13,7 +13,7 @@ const AddTour = () => {
     }} */}
       {/* <div className='absolute w-full h-full inset-0 bg-black/85 z-0'></div> */}
 
-      <div className='relative z-10 flex items-center min-h-full'>
+      <div className='relative z-10 flex items-center min-h-[80vh]'>
         <AddTourForm/>
       </div>
     </div>
