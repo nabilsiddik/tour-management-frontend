@@ -43,6 +43,13 @@ const navigationLinks = [
     role: role.admin
   },
   {
+    label: "Tours",
+    submenu: false,
+    type: "icon",
+    href: '/tours',
+    role: 'PUBLIC'
+  },
+  {
     label: "User",
     submenu: false,
     type: "icon",

@@ -84,8 +84,16 @@ export const AddTourForm = () => {
                 value: z.string()
             })
         ).optional(),
-        amenities: z.array(z.string()).optional(),
-        tourPlan: z.array(z.string()).optional(),
+        amenities: z.array(
+            z.object({
+                value: z.string()
+            })
+        ).optional(),
+        tourPlan: z.array(
+            z.object({
+                value: z.string()
+            })
+        ).optional(),
         maxGuest: z.number().optional(),
         minAge: z.number().optional(),
         division: z.string(),
@@ -103,7 +111,15 @@ export const AddTourForm = () => {
             startDate: '',
             endDate: '',
             included: [{ value: "" }],
-            excluded: [{ value: "" }]
+            excluded: [{ value: "" }],
+            amenities: [
+                { value: "" }
+            ],
+            tourPlan: [
+                { value: "" }
+            ],
+            maxGuest: 50,
+            minAge: 8,
         }
     })
 
@@ -118,6 +134,24 @@ export const AddTourForm = () => {
         control: form.control,
         name: 'excluded'
     })
+
+    const {
+        fields: amenitiesFields,
+        append: appendAmenities,
+        remove: removeAmenities,
+    } = useFieldArray({
+        control: form.control,
+        name: "amenities",
+    });
+
+    const {
+        fields: tourPlanFields,
+        append: appendTourPlan,
+        remove: removeTourPlan,
+    } = useFieldArray({
+        control: form.control,
+        name: "tourPlan",
+    });
 
 
     // Add tour
@@ -138,8 +172,11 @@ export const AddTourForm = () => {
                 startDate: formatISO(data.startDate, { representation: "date" }),
                 endDate: formatISO(data.endDate, { representation: "date" }),
                 included: data.included && data.included.map((item: { value: string }) => item.value),
-                excluded: data.excluded && data.excluded.map((item: { value: string }) => item.value)
+                excluded: data.excluded && data.excluded.map((item: { value: string }) => item.value),
+                amenities: data.amenities && data.amenities.map((item: { value: string }) => item.value),
+                tourPlan: data.tourPlan && data.tourPlan.map(((item: {value: string}, index: number) => `Day ${index+1}: ${item.value}`))
             }
+            console.log(tourData)
             const formData = new FormData()
             formData.append('data', JSON.stringify(tourData))
             images.forEach((image) => formData.append('files', image as File))
@@ -181,7 +218,6 @@ export const AddTourForm = () => {
                             </FormItem>
                         )}
                     />
-
                     <div className='flex items-center gap-3'>
                         {/* select tour type */}
                         <FormField
@@ -231,6 +267,40 @@ export const AddTourForm = () => {
                                             })}
                                         </SelectContent>
                                     </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+
+                    {/* Max guest and Min age  */}
+                    <div className='flex items-center gap-3'>
+                        {/* Max guest */}
+                        <FormField
+                            control={form.control}
+                            name="maxGuest"
+                            render={({ field }) => (
+                                <FormItem className='flex-1'>
+                                    <FormLabel>Max Guest</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} type='number' placeholder='Max guest number' />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Min age of guest */}
+                        <FormField
+                            control={form.control}
+                            name="minAge"
+                            render={({ field }) => (
+                                <FormItem className='flex-1'>
+                                    <FormLabel>Min Age</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} type='number' placeholder='Min Age of Guest' />
+                                    </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -372,7 +442,6 @@ export const AddTourForm = () => {
                                             name={`included.${index}.value`}
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Includes</FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Add Includes" {...field} />
                                                     </FormControl>
@@ -381,7 +450,7 @@ export const AddTourForm = () => {
                                             )}
                                         />
                                     </div>
-                                    <div onClick={() => includedRemove(index)} className='block cursor-pointer mt-4 bg-red-500 p-1 rounded-sm'>
+                                    <div onClick={() => includedRemove(index)} className='block cursor-pointer bg-red-500 p-1 rounded-sm'>
                                         <Trash2 />
                                     </div>
                                 </div>
@@ -408,7 +477,6 @@ export const AddTourForm = () => {
                                             name={`excluded.${index}.value`}
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Includes</FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Add Excludes" {...field} />
                                                     </FormControl>
@@ -417,13 +485,80 @@ export const AddTourForm = () => {
                                             )}
                                         />
                                     </div>
-                                    <div onClick={() => excludedRemove(index)} className='block cursor-pointer mt-4 bg-red-500 p-1 rounded-sm'>
+                                    <div onClick={() => excludedRemove(index)} className='block cursor-pointer bg-red-500 p-1 rounded-sm'>
                                         <Trash2 />
                                     </div>
                                 </div>
                             )}
                         </div>
                     </div>
+
+                    {/* devider  */}
+                    <div className='border-t border-muted w-full my-10'></div>
+
+                    {/* add amenities  */}
+                    <div>
+                        <div className='flex items-center justify-between'>
+                            <span className='font-bold text-xl'>Add Amenities</span>
+                            <Button type="button" className='text-foreground cursor-pointer' onClick={() => appendAmenities({ value: '' })}>Add Aminities <Plus /> </Button>
+                        </div>
+
+                        <div className="space-y-4 mt-4">
+                            {amenitiesFields.map((item, index) => (
+                                <div className="flex gap-2" key={item.id}>
+                                    <FormField
+                                        control={form.control}
+                                        name={`amenities.${index}.value`}
+                                        render={({ field }) => (
+                                            <FormItem className="flex-1">
+                                                <FormControl>
+                                                    <Input placeholder="Add amenities" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <div onClick={() => removeAmenities(index)} className='block cursor-pointer bg-red-500 p-1 rounded-sm'>
+                                        <Trash2 />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* devider  */}
+                    <div className='border-t border-muted w-full my-10'></div>
+
+                    {/* add tour plan  */}
+                    <div className='mb-10'>
+                        <div className='flex items-center justify-between'>
+                            <span className='font-bold text-xl'>Add Tour Plan</span>
+                            <Button type="button" className='text-foreground cursor-pointer' onClick={() => appendTourPlan({ value: '' })}>Add Tour Plan <Plus /> </Button>
+                        </div>
+
+                        <div className="space-y-4 mt-4">
+                            {tourPlanFields.map((item, index) => (
+                                <div className="flex gap-2" key={item.id}>
+                                    <FormField
+                                        control={form.control}
+                                        name={`tourPlan.${index}.value`}
+                                        render={({ field }) => (
+                                            <FormItem className="flex-1">
+                                                <FormControl>
+                                                    <Input placeholder={`Day ${index+1}`} {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <div onClick={() => removeTourPlan(index)} className='block cursor-pointer bg-red-500 p-1 rounded-sm'>
+                                        <Trash2 />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
 
                     <Button className='text-foreground w-full' type="submit">Add Tour</Button>
                 </form>
