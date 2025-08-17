@@ -16,7 +16,7 @@ const Tours = () => {
     return (
         <div className="container mx-auto">
             <div className="flex gap-5">
-                <div className="hidden xl:block flex-1">
+                <div className="hidden xl:block flex-1 rounded-md border p-4 shadow-xs">
                     sidebar
                 </div>
                 <div className="flex-3">

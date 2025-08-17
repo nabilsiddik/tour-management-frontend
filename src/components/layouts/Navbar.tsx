@@ -168,9 +168,9 @@ export default function Navbar() {
 
           {/* Main nav */}
           <div className="flex items-center gap-6">
-            <a href="#" className="text-primary hover:text-primary/90">
+            <Link to='/'>
               <Logo />
-            </a>
+            </Link>
             {/* Navigation menu */}
             <NavigationMenu viewport={false} className="max-md:hidden">
               <NavigationMenuList className="gap-2">
