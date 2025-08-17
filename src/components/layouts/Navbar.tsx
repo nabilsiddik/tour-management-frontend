@@ -56,28 +56,6 @@ const navigationLinks = [
     href: '/user',
     role: role.admin
   },
-  // {
-  //   label: "Features",
-  //   submenu: true,
-  //   type: "description",
-  //   items: [
-  //     {
-  //       href: "#",
-  //       label: "Components",
-  //       description: "Browse all components in the library.",
-  //     },
-  //     {
-  //       href: "#",
-  //       label: "Documentation",
-  //       description: "Learn how to use the library.",
-  //     },
-  //     {
-  //       href: "#",
-  //       label: "Templates",
-  //       description: "Pre-built layouts for common use cases.",
-  //     },
-  //   ],
-  // },
   {
     label: "Auth",
     submenu: true,
@@ -102,7 +80,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="border-b container mx-auto px-4 md:px-6">
+    <header className="border-b container mx-auto px-4 md:px-6 py-3">
       <div className="flex h-16 items-center justify-between gap-4">
         {/* Left side */}
         <div className="flex items-center gap-2">
@@ -239,7 +217,7 @@ export default function Navbar() {
         {/* Right side */}
         <div className="flex items-center gap-2">
           {data?.data?.email ?
-            <Button onClick={handleLogout} size="sm" className="text-sm text-foreground cursor-pointer">
+            <Button onClick={handleLogout} size="lg" className="text-sm dark:text-foreground cursor-pointer">
               Logout
             </Button>
             :

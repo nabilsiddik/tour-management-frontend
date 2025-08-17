@@ -9,7 +9,7 @@ const TourListItem = ({ tour }: any) => {
     return (
         <div className='flex items-center gap-7 flex-col md:flex-row px-5 mb-10'>
             <div className='flex-2'>
-                {tour && <img className='w-full rounded-md' src={tour.images.length > 0 ? tour.images[2] : dummyImage} alt="" />}
+                {tour && <img className='w-full rounded-md' src={tour.images.length > 0 ? tour.images[1] : dummyImage} alt="" />}
             </div>
 
             <div className='flex flex-col gap-4 flex-2'>
@@ -78,7 +78,7 @@ const TourListItem = ({ tour }: any) => {
 
                 <div className='w-full'>
                     <Link to={`/tour/${tour._id}`}>
-                        <Button className='text-foreground w-full'>View Details</Button>
+                        <Button size={'lg'} className='dark:text-foreground w-full'>View Details</Button>
                     </Link>
                 </div>
             </div>

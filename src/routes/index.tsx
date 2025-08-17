@@ -14,6 +14,8 @@ import { role } from "@/constants/role";
 import type { TRole } from "@/types";
 import AllTourTypes from "@/pages/admin/AddTourType";
 import Tours from "@/pages/Tours";
+import Home from "@/pages/Home";
+import TourDetails from "@/pages/TourDetails";
 
 export const router = createBrowserRouter([
     {
@@ -21,12 +23,20 @@ export const router = createBrowserRouter([
         Component: App,
         children: [
             {
+                index: true,
+                Component: Home
+            },
+            {
                 path: 'about',
                 Component: withAuth(About)
             },
             {
                 path: '/tours',
                 Component: withAuth(Tours)
+            },
+            {
+                path: '/tour/:id',
+                Component: withAuth(TourDetails)
             },
         ]
     },

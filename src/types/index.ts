@@ -4,9 +4,10 @@ import type { ComponentType, ForwardRefExoticComponent, RefAttributes } from 're
 export type { ISendOtp } from './auth.type'
 export type { ILogin } from './auth.type'
 export type { IRegistration } from './auth.type'
+export type {ITourType} from './tour.type'
 
 // OTP Response types
-export interface IOtpResponse<T> {
+export interface IResponse<T> {
   statusCode: number
   success: boolean
   message: string
