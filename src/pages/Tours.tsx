@@ -1,89 +1,26 @@
-import Devider from "@/components/Devider"
+import TourFilter from "@/components/modules/Tour/TourFilter"
 import TourListItem from "@/components/TourListItem"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
-import { useAllDivisionsQuery } from "@/redux/features/division/division.api"
-import { useGetToursQuery, useGetTourTypesQuery } from "@/redux/features/tour/tour.api"
+import { useGetToursQuery } from "@/redux/features/tour/tour.api"
 import type { ITourType } from "@/types"
-import { useEffect, useState } from "react"
-
-interface ITour {
-    _id: string,
-    name: string,
-}
-interface IDivision {
-    _id: string,
-    name: string,
-}
-
+import { useSearchParams } from "react-router-dom"
 
 const Tours = () => {
-    const [selectedDivision, setSelectedDivision] = useState<string | undefined>(undefined)
-    const [selectedTourType, setSelectedTourType,] = useState<string | undefined>(undefined)
 
-    
-    const { data: tours } = useGetToursQuery({division: selectedDivision, tourType: selectedTourType})
+    const [searchParams, setSearchParams] = useSearchParams()
 
-    const { data: tourTypes, isLoading: tourLoading } = useGetTourTypesQuery(undefined)
-    const { data: divisions, isLoading: divisionLoading } = useAllDivisionsQuery(undefined)
+    // Get params from the searchparams
+    const selectedDivision = searchParams.get('division') || undefined
+    const selectedTourType = searchParams.get('tourType') || undefined
 
-    const allTourTypes = tourTypes?.map((type: ITour) => {
-        return {
-            value: type?._id,
-            label: type?.name
-        }
-    }) ?? []
+    const { data: tours } = useGetToursQuery({ division: selectedDivision, tourType: selectedTourType })
 
-    // All divisions
-    const allDivisions = divisions?.data?.map((type: IDivision) => {
-        return {
-            value: type?._id,
-            label: type?.name
-        }
-    }) ?? []
 
     return (
         <div className="container mx-auto">
             <div className="flex gap-5">
                 <div className="hidden xl:block flex-1 rounded-md border p-4 shadow-xs">
-                    <h2 className="text-xl font-bold mb-5">Filter Tour</h2>
-
-                    <div className="mb-5">
-                        <h3 className="mb-2">By Division</h3>
-                        <Select onValueChange={(value) => {
-                            setSelectedDivision(value)
-                        }}>
-                            <SelectTrigger className='w-full' disabled={divisionLoading}>
-                                <SelectValue placeholder="Select Tour Type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {allDivisions.map((item: {
-                                    value: string,
-                                    label: string
-                                }, index: number) => {
-                                    return <SelectItem key={index} value={item?.value}>{item?.label}</SelectItem>
-                                })}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="mb-5">
-                        <h3 className="mb-2">By Tour Type</h3>
-                        <Select onValueChange={(value) => {
-                            setSelectedTourType(value)
-                        }}>
-                            <SelectTrigger className='w-full' disabled={tourLoading}>
-                                <SelectValue placeholder="Select Tour Type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {allTourTypes.map((item: {
-                                    value: string,
-                                    label: string
-                                }, index: number) => {
-                                    return <SelectItem key={index} value={item?.value}>{item?.label}</SelectItem>
-                                })}
-                            </SelectContent>
-                        </Select>
+                    <div>
+                        <TourFilter />
                     </div>
                 </div>
                 <div className="flex-3">

@@ -19,7 +19,7 @@ import { CalendarIcon, Plus, Trash2 } from 'lucide-react';
 import { Calendar } from '../ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import MultipleTourImageUploader from '../MultipleTourImageUploader';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { FileMetadata } from '@/hooks/use-file-upload';
 import { toast } from 'sonner';
 
@@ -37,7 +37,7 @@ export const AddTourForm = () => {
 
     // Multiple images states
     const [images, setImages] = useState<(File | FileMetadata)[] | []>([])
-    const [isUploaded, setIsUploaded] = useState<boolean>(false)
+    // const [isUploaded, setIsUploaded] = useState<boolean>(false)
 
     const { data: tourTypes, isLoading: tourLoading } = useGetTourTypesQuery(undefined)
     const { data: divisions, isLoading: divisionLoading } = useAllDivisionsQuery(undefined)

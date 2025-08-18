@@ -5,8 +5,8 @@ import { useCreateBookingMutation } from "@/redux/features/booking/booking.api"
 import { useGetToursQuery } from "@/redux/features/tour/tour.api"
 import { IconMoneybag } from "@tabler/icons-react"
 import { CarIcon } from "lucide-react"
-import { useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { useState } from "react"
+import { useParams } from "react-router-dom"
 import { toast } from "sonner"
 
 const TourDetails = () => {
