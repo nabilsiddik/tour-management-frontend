@@ -16,14 +16,14 @@ interface IDivision {
 }
 
 const TourFilter = () => {
-
-    const [selectedDivision, setSelectedDivision] = useState<string>("")
-    const [selectedTourType, setSelectedTourType] = useState<string>("")
     const [searchParams, setSearchParams] = useSearchParams()
+
+    // Get params from the searchparams
+    const selectedDivision = searchParams.get('division') || undefined
+    const selectedTourType = searchParams.get('tourType') || undefined
 
     // Set url params on division change
     const handleDivisionChange = (value: string) => {
-        setSelectedDivision(value)
         const params = new URLSearchParams(searchParams)
         params.set('division', value)
         setSearchParams(params)
@@ -31,7 +31,6 @@ const TourFilter = () => {
 
     // Set url params on tourType change
     const handleTourTypeChange = (value: string) => {
-        setSelectedTourType(value)
         const params = new URLSearchParams(searchParams)
         params.set('tourType', value)
         setSearchParams(params)
@@ -58,8 +57,6 @@ const TourFilter = () => {
     // Clear filter
     const handleClearFilter = () => {
         setSearchParams(undefined)
-        setSelectedDivision('')
-        setSelectedTourType('')
     }
 
     return (
@@ -71,7 +68,7 @@ const TourFilter = () => {
 
             <div className="mb-5">
                 <h3 className="mb-2">By Division</h3>
-                <Select value={selectedDivision} onValueChange={(value) => {
+                <Select value={selectedDivision ? selectedDivision : ''} onValueChange={(value) => {
                     handleDivisionChange(value)
                 }}>
                     <SelectTrigger className='w-full' disabled={divisionLoading}>
@@ -90,7 +87,7 @@ const TourFilter = () => {
 
             <div className="mb-5">
                 <h3 className="mb-2">By Tour Type</h3>
-                <Select value={selectedTourType} onValueChange={(value) => {
+                <Select value={selectedTourType ? selectedTourType : ''} onValueChange={(value) => {
                     handleTourTypeChange(value)
                 }}>
                     <SelectTrigger className='w-full' disabled={tourLoading}>

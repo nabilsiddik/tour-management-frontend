@@ -29,9 +29,10 @@ export const tourApi = baseApi.injectEndpoints({
             providesTags: ['TOUR']
         }),
         getTourTypes: builder.query({
-            query: () => ({
+            query: (params) => ({
                 url: '/tour/tour-types',
-                method: 'GET'
+                method: 'GET',
+                params
             }),
             transformResponse: (res) => res.data,
             providesTags: ['TOUT_TYPES']

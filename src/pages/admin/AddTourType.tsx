@@ -1,5 +1,6 @@
 import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal"
 import { AddTourTypeModal } from "@/components/modules/TourType/AddTourTypeModal"
+import Paginate from "@/components/Paginate"
 import {
     Table,
     TableBody,
@@ -11,6 +12,7 @@ import {
 import { useDeleteTourTypeMutation, useGetTourTypesQuery } from "@/redux/features/tour/tour.api"
 import { formatDate } from "@/utils/formatDate"
 import { Edit, Trash2 } from "lucide-react"
+import { useState } from "react"
 import { toast } from "sonner"
 
 interface ITourType {
@@ -18,13 +20,15 @@ interface ITourType {
     name: string,
     createdAt: string,
     updatedAt: string,
-
 }
 
 const AddTourType = () => {
-
-    const { data } = useGetTourTypesQuery(undefined)
+    const [page, setPage] = useState<number>(1)
+    const [limit, setLimit] = useState<number>(10)
+    const { data } = useGetTourTypesQuery({page, limit})
     const [deleteTourType] = useDeleteTourTypeMutation()
+
+    const totalPage = data?.meta?.totalPage || 1
 
     // Delete tour type
     const handleDeleteTourType = async (tourTypeId: string) => {
@@ -49,7 +53,7 @@ const AddTourType = () => {
                 <h2 className="font-bold text-center text-2xl mb-10 mt-5">All Tour Types</h2>
                 <AddTourTypeModal />
             </div>
-            <Table>
+            <Table className="border">
                 <TableHeader>
                     <TableRow>
                         <TableHead>Name</TableHead>
@@ -59,7 +63,7 @@ const AddTourType = () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data && data.map((tourType: ITourType) => {
+                    {data && data?.data?.map((tourType: ITourType) => {
                         return <TableRow key={tourType._id}>
                             <TableCell className="font-medium">{tourType?.name}</TableCell>
                             <TableCell>{formatDate(new Date(tourType.createdAt))}</TableCell>
@@ -78,6 +82,10 @@ const AddTourType = () => {
                     })}
                 </TableBody>
             </Table>
+
+            <div className="mt-5 flex justify-end">
+                <Paginate page = {page} setPage = {setPage} totalPage = {totalPage}/>
+            </div>
         </div>
     )
 }
