@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAllDivisionsQuery } from "@/redux/features/division/division.api"
 import { useGetTourTypesQuery } from "@/redux/features/tour/tour.api"
-import { useState } from "react"
 import { useSearchParams } from "react-router-dom"
 
 
@@ -36,10 +35,10 @@ const TourFilter = () => {
         setSearchParams(params)
     }
 
-    const { data: tourTypes, isLoading: tourLoading } = useGetTourTypesQuery(undefined)
+    const { data: tourTypes, isLoading: tourLoading } = useGetTourTypesQuery({limit: 1000, fields: '_id, name'})
     const { data: divisions, isLoading: divisionLoading } = useAllDivisionsQuery(undefined)
 
-    const allTourTypes = tourTypes?.map((type: ITour) => {
+    const allTourTypes = tourTypes?.data?.map((type: ITour) => {
         return {
             value: type?._id,
             label: type?.name

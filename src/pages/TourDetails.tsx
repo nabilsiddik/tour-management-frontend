@@ -2,17 +2,23 @@ import Devider from "@/components/Devider"
 import Loading from "@/components/Loading"
 import { Button } from "@/components/ui/button"
 import { useCreateBookingMutation } from "@/redux/features/booking/booking.api"
-import { useGetToursQuery } from "@/redux/features/tour/tour.api"
+import { useAllDivisionsQuery } from "@/redux/features/division/division.api"
+import { useGetToursQuery, useGetTourTypesQuery } from "@/redux/features/tour/tour.api"
 import { IconMoneybag } from "@tabler/icons-react"
+import { format } from "date-fns"
 import { CarIcon } from "lucide-react"
 import { useState } from "react"
 import { useParams } from "react-router-dom"
 import { toast } from "sonner"
+import { FaLocationDot } from "react-icons/fa6";
 
 const TourDetails = () => {
 
     const { id } = useParams()
     const { data, isLoading, isError } = useGetToursQuery({ _id: id })
+    const { data: divisionData } = useAllDivisionsQuery({_id: data?.[0]?.division, fields: 'name'}, {skip: !data})
+    const {data: tourTypeData} = useGetTourTypesQuery({_id: data?.[0].tourType})
+
     const [guestCount, setGuestCount] = useState<number>(1)
     const [createBooking] = useCreateBookingMutation()
 
@@ -57,13 +63,13 @@ const TourDetails = () => {
             const res = await createBooking(bookingData).unwrap()
             console.log(res)
 
-            if(res.success){
-                toast.success('You have successfully booked this tour.', {id: bookingId})
+            if (res.success) {
+                toast.success('You have successfully booked this tour.', { id: bookingId })
             }
 
         } catch (error: any) {
             console.error('Error while booking tour.', error)
-            toast.error(error?.data?.message, {id: bookingId})
+            toast.error(error?.data?.message, { id: bookingId })
         }
 
     }
@@ -106,15 +112,27 @@ const TourDetails = () => {
                     <div className="flex-4">
                         <div>
                             <h1 className="font-bold text-foreground lg:text-4xl md:text-3xl text-2xl mb-3">{tourData?.title}</h1>
-                            <div className="flex items-center gap-5">
-                                <span className="flex items-center gap-3">
-                                    <span><CarIcon /></span>
-                                    <span>From {tourData?.departureLocation}</span>
-                                </span>
-                                <span className="flex items-center gap-3">
-                                    <span><CarIcon /></span>
-                                    <span>To {tourData?.arrivalLocation}</span>
-                                </span>
+                            <div className="flex items-start sm:items-center justify-between flex-col sm:flex-row gap-2">
+                                <div className="flex items-center gap-5">
+                                    <span className="flex items-center gap-3">
+                                        <span><CarIcon /></span>
+                                        <span>From {tourData?.departureLocation}</span>
+                                    </span>
+                                    <span className="flex items-center gap-3">
+                                        <span><CarIcon /></span>
+                                        <span>To {tourData?.arrivalLocation}</span>
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center gap-5">
+                                    <span className="flex items-center gap-2">
+                                        <FaLocationDot />
+                                        {divisionData?.data?.[0]?.name}
+                                    </span>
+                                    <span className="flex items-center gap-2">
+                                        <FaLocationDot /> {tourTypeData?.data?.[0].name}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -185,14 +203,14 @@ const TourDetails = () => {
                                 <div className="flex items-center justify-between py-5 px-3 lg:px-2 xl:px-5">
                                     <div>
                                         <p className="font-bold">Start Date</p>
-                                        <p>{'15 August 2025'}</p>
+                                        <p>{format(new Date(tourData?.startDate ? tourData?.startDate : new Date()), 'PP')}</p>
                                     </div>
                                     <div>
                                         <span>-</span>
                                     </div>
                                     <div>
                                         <p className="font-bold">End Date</p>
-                                        <p>{'20 August 2025'}</p>
+                                        <p>{format(new Date(tourData?.endDate ? tourData?.endDate : new Date()), 'PP')}</p>
                                     </div>
                                 </div>
                                 <div>
